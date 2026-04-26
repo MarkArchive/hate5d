@@ -56,7 +56,7 @@ proc createObject*(
 ): Object =
     return Object(
         name    : name,
-        id      : id,  # usa o noww() do common como ID temporário
+        id      : id,
         tipo    : tipo,
         x       : x,
         y       : y,
