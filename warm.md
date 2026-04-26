@@ -1,0 +1,1 @@
+On that day (April 26, 2026), I pushed hate5D to Nimble, so if you try to use `nimble install [repo link]` (this won’t work because Nimble’s cache has an old, broken version) or `nimble install hate5d`, it might not install (since repository approval is manual) and give an error. That’s all.
