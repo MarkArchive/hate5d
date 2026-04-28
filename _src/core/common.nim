@@ -63,6 +63,7 @@ type
         w*, h*      : int
         visible*    : bool
         img*        : Option[string] # caso seja um sprite
+        tex*        : SdlTexture     # guarda sua textura
 
 #[     ObjectDDD* = object
         name*       : string

@@ -9,20 +9,8 @@ import render
 
 randomize()
 
-# desenha um objeto
-proc drawObject*(obj: Object, win: WindowInfoMake): HateResult[bool] = 
-    # não reclama, vai reclamar de que?
-    if not obj.visible: return HateResult[bool](ok: true, val: true)
-    
-    # desenha algo genérico quando não tem sprite
-    if obj.img.isNone: return drawFillRect(win, obj.x.int32, obj.y.int32, obj.w.int32, obj.h.int32)
-    
-    # usa o sprite do objeto
-    else: return drawSprite(win, obj.img.get(), obj.x.int32, obj.y.int32, obj.w.int32, obj.h.int32)
-
-# drawObject cria uma texture, tá, mas ela não é retornada
-# o loadTexture faz o papel de rodar a imagem para criar o SdlTexture
-# por enquanto, vai ser isso, na v0.1.1, Object vai ter uma parte específica para isso
+# na v0.1.1, você não vai precisar usar o loadTexture
+# apenas será utilizado de forma interna
 proc loadTexture*(win: WindowInfoMake, path: string): HateResult[SdlTexture] =
     if win.sdlRen == nil:
         return HateResult[SdlTexture](ok: false, err: "no renderer")
@@ -38,13 +26,37 @@ proc loadTexture*(win: WindowInfoMake, path: string): HateResult[SdlTexture] =
     
     return HateResult[SdlTexture](ok: true, val: tex)
 
-proc unloadTexture*(tex: SdlTexture) =
+# desenha um objeto
+proc drawObject*(obj: var Object, win: WindowInfoMake): HateResult[bool] = 
+    # não reclama, vai reclamar de que?
+    if not obj.visible: return HateResult[bool](ok: true, val: true)
+    
+    if obj.tex != nil:
+        # se ta carregado, usa direto
+        var dst = rectOf(obj.x.int32, obj.y.int32, obj.w.int32, obj.h.int32)
+        discard sdlRenderCopy(win.sdlRen, obj.tex, nil, addr dst)
+        return HateResult[bool](ok: true, val: true)
+    
+    elif obj.tex == nil and obj.img.isSome:
+        # se texture não existe, mas tem imagem, carrega uma vez e guarda
+        let res = loadTexture(win, obj.img.get())
+        if not res.ok: return HateResult[bool](ok: false, err: $res.err)
+
+        obj.tex = res.val
+        var dst = rectOf(obj.x.int32, obj.y.int32, obj.w.int32, obj.h.int32)
+        discard sdlRenderCopy(win.sdlRen, obj.tex, nil, addr dst)
+        return HateResult[bool](ok: true, val: true)
+    
+    # retorna um genérico
+    else: return drawFillRect(win, obj.x.int32, obj.y.int32, obj.w.int32, obj.h.int32)
+
+proc unloadTexture*(tex: SdlTexture) = 
     if tex != nil: sdlDestroyTexture(tex)
 
-proc deleteObject*(obj: Object, win: WindowInfoMake) =
-    if obj.img.isSome:
-        let res = loadTexture(win, obj.img.get())
-        if res.ok: sdlDestroyTexture(res.val)
+proc deleteObject*(obj: var Object, win: WindowInfoMake) =
+    if obj.tex != nil:
+        sdlDestroyTexture(obj.tex)
+        obj.tex = nil
 
 proc createObject*(
     name : string,
@@ -52,8 +64,16 @@ proc createObject*(
     id   : int64,
     x, y : int = 0,
     w, h : int = 32,
-    img  : Option[string] = none(string)
+    img  : Option[string] = none(string),
+    win  : WindowInfoMake
 ): Object =
+
+    var imgload: SdlTexture = nil
+
+    if img.isSome:
+        let res = loadTexture(win, img.get())
+        if res.ok: imgload = res.val
+
     return Object(
         name    : name,
         id      : id,
@@ -63,5 +83,6 @@ proc createObject*(
         w       : w,
         h       : h,
         visible : true,
-        img     : img
+        img     : img,
+        tex     : imgload
     )

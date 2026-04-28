@@ -82,14 +82,16 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased]: planned
+## [0.1.0]: 2026
 
-(versions without subversions can have future subversions)
-
-### v0.1.1
+### Added
 - `Object` gains `tex: SdlTexture` field
 - Texture cache: load once, reuse across frames
 - `drawSprite` uses cached texture instead of loading from disk
+
+## [Unreleased]: planned
+
+(versions without subversions can have future subversions)
 
 ### v0.1.2
 - Partial input keyboard system (get `chars`)

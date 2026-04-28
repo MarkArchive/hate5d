@@ -71,6 +71,7 @@ ObjectType* = enum
 | `w`, `h` | `int` | size |
 | `visible` | `bool` | whether to render |
 | `img` | `Option[string]` | path to sprite image, if any |
+| `tex` | `SdlTexture` | texture of img (real sprite) |
 
 #### `HateResult[T]`
 return type used across the engine for fallible operations.
@@ -202,10 +203,8 @@ Draws a line between two points.
 ### `drawSprite(win, path, x, y, w, h): HateResult[SdlTexture]`
 loads an image from disk and draws it at the given position and size. Returns the created `SdlTexture`  caller is responsible for destroying it with `unloadTexture` when done.
 
-> **WARM**: v0.1.0 loads from disk every call. Texture caching is planned for v0.1.1.
-
 ### `loadTexture(win, path): HateResult[SdlTexture]`
-loads an image and returns the texture without drawing. Use when you need the texture handle directly.
+loads an image and returns the texture without drawing. Use when you need the texture handle directly (v0.1.1: you just use drawObject and createObject, loadTexture is for internal).
 
 ---
 
@@ -221,9 +220,10 @@ creates a new `Object` with the given parameters.
 | `x`, `y` | `0`, `0` | position |
 | `w`, `h` | `32`, `32` | size |
 | `img` | `none(string)` | sprite path |
+| `win` | `WindowInfoMake` | window |
 
 ### `drawObject(obj, win): HateResult[bool]`
-draws an object. if `visible` is false, returns ok silently. if `img` is none, draws a filled rectangle placeholder. if `img` is set, draws the sprite.
+draws an object. if `visible` is false, returns ok silently. if `tex` is none, draws a filled rectangle placeholder. if `tex` is none and `img` is set, create texture and add to `Object`.
 
 ### `unloadTexture(tex: SdlTexture)`
 safely destroys a texture. Checks for nil before calling SDL.
@@ -254,7 +254,7 @@ while true:
 
 ---
 
-## What is NOT in v0.1.0
+## What is NOT in v0.1.1
 
 The following are planned but not yet implemented:
 
