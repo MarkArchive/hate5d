@@ -82,12 +82,13 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.1.0]: 2026
+## [0.1.1]: 2026
 
 ### Added
 - `Object` gains `tex: SdlTexture` field
 - Texture cache: load once, reuse across frames
 - `drawSprite` uses cached texture instead of loading from disk
+- `char.nim` with a lot of keycodes (`SDLSK_*`, * can be a char, number, symbol and special keys (e.g.: F1, return))
 
 ## [Unreleased]: planned
 

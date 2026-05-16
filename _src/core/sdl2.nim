@@ -42,7 +42,9 @@ const
     SDLK_SPACE* = 32'i32
     SDLK_RETURN* = 13'i32
     SDLK_w* = 119'i32
+    SDLK_a* = 97'i32  
     SDLK_s* = 115'i32
+    SDLK_d* = 100'i32
 
 type
     SdlWindow* = pointer
